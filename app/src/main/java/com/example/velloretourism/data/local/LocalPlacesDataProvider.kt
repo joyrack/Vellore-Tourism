@@ -11,7 +11,7 @@ object LocalPlacesDataProvider {
             category = Category.CAFES,
             name = R.string.chocolate_room_name,
             rating = 4.3,
-            imageId = -1,
+            imageId = R.drawable.avatar_0,
             description = R.string.chocolate_room_description,
             menuUrl = R.string.chocolate_room_menu
         ),
@@ -19,7 +19,7 @@ object LocalPlacesDataProvider {
             category = Category.CAFES,
             name = R.string.chocolate_room_name,
             rating = 4.3,
-            imageId = -1,
+            imageId = R.drawable.avatar_0,
             description = R.string.chocolate_room_description,
             menuUrl = R.string.chocolate_room_menu
         ),
@@ -27,7 +27,7 @@ object LocalPlacesDataProvider {
             category = Category.CAFES,
             name = R.string.chocolate_room_name,
             rating = 4.3,
-            imageId = -1,
+            imageId = R.drawable.avatar_0,
             description = R.string.chocolate_room_description,
             menuUrl = R.string.chocolate_room_menu
         ),
@@ -35,7 +35,7 @@ object LocalPlacesDataProvider {
             category = Category.CAFES,
             name = R.string.chocolate_room_name,
             rating = 4.3,
-            imageId = -1,
+            imageId = R.drawable.avatar_0,
             description = R.string.chocolate_room_description,
             menuUrl = R.string.chocolate_room_menu
         ),
