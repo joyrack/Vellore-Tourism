@@ -30,10 +30,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val windowSize = calculateWindowSizeClass(activity = this)
-                    CategoryScreen(
-                        windowWidthSizeClass = windowSize.widthSizeClass,
-                        onCategoryClick = {}
-                    )
+                    TourismApp(windowSize.widthSizeClass)
                 }
             }
         }

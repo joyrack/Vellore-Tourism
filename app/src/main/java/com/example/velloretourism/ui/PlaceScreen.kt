@@ -41,47 +41,50 @@ import com.example.velloretourism.data.Place
 import com.example.velloretourism.data.local.LocalPlacesDataProvider
 import com.example.velloretourism.ui.Utils.ContentType
 
-@Composable
-fun PlaceScreen(
-    windowWidthSizeClass: WindowWidthSizeClass,
-    modifier: Modifier,
-) {
-
-    val contentType = when(windowWidthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            ContentType.LIST_ONLY
-        }
-        WindowWidthSizeClass.Medium -> {
-            ContentType.LIST_ONLY
-        }
-        WindowWidthSizeClass.Expanded -> {
-            ContentType.LIST_AND_DETAIL
-        }
-        else -> {
-            ContentType.LIST_ONLY
-        }
-    }
-
-    val placesList = LocalPlacesDataProvider.allPlaces
-
-    if(contentType == ContentType.LIST_AND_DETAIL) {
-        PlaceListAndDetail(
-            placesList = placesList,
-            onItemClick = {}
-        )
-    }
-    else {
-        PlacesList(
-            placesList = placesList,
-            modifier = modifier,
-        )
-    }
-}
+//@Composable
+//fun PlaceScreen(
+//    windowWidthSizeClass: WindowWidthSizeClass,
+//    modifier: Modifier,
+//) {
+//
+//    val contentType = when(windowWidthSizeClass) {
+//        WindowWidthSizeClass.Compact -> {
+//            ContentType.LIST_ONLY
+//        }
+//        WindowWidthSizeClass.Medium -> {
+//            ContentType.LIST_ONLY
+//        }
+//        WindowWidthSizeClass.Expanded -> {
+//            ContentType.LIST_AND_DETAIL
+//        }
+//        else -> {
+//            ContentType.LIST_ONLY
+//        }
+//    }
+//
+//    val placesList = LocalPlacesDataProvider.allPlaces
+//
+//    if(contentType == ContentType.LIST_AND_DETAIL) {
+//        PlaceListAndDetail(
+//            placesList = placesList,
+//            onItemClick = {}
+//        )
+//    }
+//    else {
+//        PlacesList(
+//            placesList = placesList,
+//            modifier = modifier,
+//            onItemClick = {}
+//        )
+//    }
+//}
 
 @Composable
 fun PlacesList(
     placesList: List<Place>,
+    onItemClick: (Place) -> Unit,
     modifier: Modifier = Modifier,
+    currentSelectedPlace: Place?,
 ) {
     LazyColumn(
         modifier = modifier
@@ -92,8 +95,8 @@ fun PlacesList(
         items(placesList) {place ->
             PlacesListItem(
                 place = place,
-                onItemClick = { /*TODO*/ },
-                selected = false,
+                onItemClick = { onItemClick(place) },
+                selected = place == currentSelectedPlace,
             )
         }
     }
@@ -152,68 +155,81 @@ fun PlacesListItem(
 
 @Composable
 fun PlaceDetail(
-    place: Place,
+    place: Place?,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(start = 12.dp, end = 12.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Box {
-            Image(
-                painter = painterResource(id = place.imageId),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.5f),
-                contentScale = ContentScale.FillBounds
-            )
+    if(place == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+            ) {
+            Text("No place selected yet")
         }
-        Text(
-            text = "Rating: ${place.rating} / 5",
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Column {
+    }
+    else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(start = 12.dp, end = 12.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            Box {
+                Image(
+                    painter = painterResource(id = place.imageId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.5f),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
             Text(
-                "Description",
-                style = MaterialTheme.typography.headlineSmall,
+                text = "Rating: ${place.rating} / 5",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Column {
+                Text(
+                    "Description",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textDecoration = TextDecoration.Underline
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    stringResource(id = place.description),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            Text(
+                "Check out menu",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.inversePrimary
+                ),
                 textDecoration = TextDecoration.Underline
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                stringResource(id = place.description),
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
-        Text(
-            "Check out menu",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.inversePrimary
-            ),
-            textDecoration = TextDecoration.Underline
-        )
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
 fun PlaceListAndDetail(
     placesList: List<Place>,
-    onItemClick: () -> Unit,
+    onItemClick: (Place) -> Unit,
     modifier: Modifier = Modifier,
+    currentSelectedPlace: Place?,
 ) {
     Row(
         modifier = modifier.fillMaxSize()
     ) {
         PlacesList(
             placesList = placesList,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onItemClick = onItemClick,
+            currentSelectedPlace = currentSelectedPlace
         )
         PlaceDetail(
-            place = placesList[0],
+            place = currentSelectedPlace,
             modifier = Modifier.weight(1f)
         )
     }
@@ -234,6 +250,8 @@ fun PlaceListItemPreview() {
 fun PlacesListPreview() {
     PlacesList(
         placesList = LocalPlacesDataProvider.allPlaces,
+        currentSelectedPlace = null,
+        onItemClick = {}
     )
 }
 
@@ -250,6 +268,7 @@ fun PlaceDetailPreview() {
 fun PlacesListAndDetailPreview() {
     PlaceListAndDetail(
         placesList = LocalPlacesDataProvider.allPlaces,
-        onItemClick = {}
+        onItemClick = {},
+        currentSelectedPlace = null
     )
 }
