@@ -3,12 +3,20 @@ package com.example.velloretourism
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.rememberNavController
 import com.example.velloretourism.ui.CategoryScreen
 import com.example.velloretourism.ui.MainViewModel
@@ -18,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.velloretourism.data.Category
 import com.example.velloretourism.data.local.LocalPlacesDataProvider
 import com.example.velloretourism.ui.PlaceDetail
@@ -33,7 +42,29 @@ enum class AppScreen(@StringRes val title: Int) {
     PlaceDetail(title = -1)
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TourismAppBar(
+    currentTitle: String,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(currentTitle) },
+        modifier = modifier,
+        navigationIcon = {
+            if(canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+    )
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TourismApp(
@@ -67,10 +98,42 @@ fun TourismApp(
     // get the list of all the categories
     val categoryList = Category.values().toList()
 
+    // get current back stack entry
+    val backStackEntry by navController.currentBackStackEntryAsState()
+
+    // get current screen
+    val currentScreen = AppScreen.valueOf(
+        backStackEntry?.destination?.route ?: AppScreen.Category.name
+    )
+
+    // state of the app
+    val uiState = viewModel.uiState.collectAsState()
+
     Scaffold(
-        topBar = {}
+        topBar = {
+            if(contentType == ContentType.LIST_ONLY) {
+                TourismAppBar(
+                    currentTitle =
+                    when(currentScreen) {
+                        AppScreen.Category -> stringResource(id = R.string.app_name)
+                        AppScreen.PlaceList -> stringResource(id = uiState.value.currentSelectedCategory!!.title)
+                        AppScreen.PlaceDetail -> stringResource(id = uiState.value.currentSelectedPlace!!.name)
+                    },
+                    canNavigateBack = currentScreen != AppScreen.Category,
+                    navigateUp = { navController.navigateUp() }
+                )
+            }
+            else {
+                if(currentScreen == AppScreen.Category) {
+                    TourismAppBar(
+                        currentTitle = stringResource(id = R.string.app_name),
+                        canNavigateBack = false,
+                        navigateUp = { }
+                    )
+                }
+            }
+        }
     ) { innerPadding ->
-        val uiState = viewModel.uiState.collectAsState()
 
         NavHost(
             navController = navController,
