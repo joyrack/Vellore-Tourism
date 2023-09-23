@@ -120,7 +120,21 @@ fun TourismApp(
                         AppScreen.PlaceDetail -> stringResource(id = uiState.value.currentSelectedPlace!!.name)
                     },
                     canNavigateBack = currentScreen != AppScreen.Category,
-                    navigateUp = { navController.navigateUp() }
+                    navigateUp = {
+                        if(currentScreen == AppScreen.PlaceDetail) {
+                            viewModel.removeSelectedPlace()
+                            navController.popBackStack(
+                                AppScreen.PlaceList.name,
+                                false
+                            )
+                        }
+                        if(currentScreen == AppScreen.PlaceList) {
+                            navController.popBackStack(
+                                AppScreen.Category.name,
+                                false
+                            )
+                        }
+                    }
                 )
             }
             else {
@@ -161,26 +175,72 @@ fun TourismApp(
                             viewModel.updateCurrentPlace(it)    // update the state
                         },
                         modifier = Modifier.fillMaxSize(),
-                        currentSelectedPlace = uiState.value.currentSelectedPlace
+                        currentSelectedPlace = uiState.value.currentSelectedPlace,
+                        onBackPressed = {
+                            navController.popBackStack(
+                                AppScreen.Category.name,
+                                false
+                            )
+                            viewModel.removeSelectedPlace()     // remove the selected place
+                        }
                     )
                 }
                 else {
-                    PlacesList(
-                        placesList = uiState.value.currentCategoryPlaces,
-                        modifier = Modifier.fillMaxSize(),
-                        onItemClick = {
-                            viewModel.updateCurrentPlace(it)    // update the state
-                            navController.navigate(AppScreen.PlaceDetail.name)      // change screen
-                        },
-                        currentSelectedPlace = uiState.value.currentSelectedPlace
-                    )
+                    if(uiState.value.currentSelectedPlace == null) {    // no place is selected
+                        PlacesList(
+                            placesList = uiState.value.currentCategoryPlaces,
+                            modifier = Modifier.fillMaxSize(),
+                            onItemClick = {
+                                viewModel.updateCurrentPlace(it)    // update the state
+                                navController.navigate(AppScreen.PlaceDetail.name)      // change screen
+                            },
+                            currentSelectedPlace = uiState.value.currentSelectedPlace
+                        )
+                    } else {    // a place is already selected
+                        PlaceDetail(
+                            place = uiState.value.currentSelectedPlace,
+                            onBackPressed = {
+                                navController.popBackStack(
+                                    AppScreen.PlaceList.name,
+                                    false
+                                )
+                                viewModel.removeSelectedPlace()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
             composable(route = AppScreen.PlaceDetail.name) {
-                PlaceDetail(
-                    place = uiState.value.currentSelectedPlace,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if(contentType == ContentType.LIST_AND_DETAIL) {
+                    PlaceListAndDetail(
+                        placesList = uiState.value.currentCategoryPlaces,
+                        onItemClick = {
+                            viewModel.updateCurrentPlace(it)
+                        },
+                        currentSelectedPlace = uiState.value.currentSelectedPlace,
+                        onBackPressed = {
+                            navController.popBackStack(
+                                AppScreen.Category.name,
+                                false
+                            )
+                            viewModel.removeSelectedPlace()
+                        }
+                    )
+                }
+                else {
+                    PlaceDetail(
+                        place = uiState.value.currentSelectedPlace,
+                        modifier = Modifier.fillMaxSize(),
+                        onBackPressed = {
+                            navController.popBackStack(
+                                AppScreen.PlaceList.name,
+                                false
+                            )
+                            viewModel.removeSelectedPlace()
+                        }
+                    )
+                }
             }
         }
 

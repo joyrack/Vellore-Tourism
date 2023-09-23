@@ -12,4 +12,29 @@
     <string name="chocolate_room_description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</string>
     <string name="chocolate_room_name">Chocolate Room</string>
     <string name="chocolate_room_menu">https://www.zomato.com/vellore/the-chocolate-room-katpadi/menu</string>
+
+    <string name="seventh_heaven_name">Seventh Heaven</string>
+    <string name="seventh_heaven_description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</string>
+    <string name="seventh_heaven_menu">https://www.zomato.com/vellore/the-chocolate-room-katpadi/menu</string>
+
+    <string name="one_name">una</string>
+    <string name="one_desc">una_desc</string>
+
+    <string name="a_name">one</string>
+    <string name="a_desc">one_desc</string>
+
+    <string name="b_name">two</string>
+    <string name="b_desc">two_desc</string>
+
+    <string name="c_name">three</string>
+    <string name="c_desc">three_desc</string>
+
+    <string name="d_name">four</string>
+    <string name="d_desc">four_desc</string>
+
+    <string name="e_name">five</string>
+    <string name="e_desc">five_desc</string>
+
+    <string name="f_name">six</string>
+    <string name="f_desc">six_desc</string>
 </resources>

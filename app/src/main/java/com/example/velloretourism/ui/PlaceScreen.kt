@@ -1,5 +1,6 @@
 package com.example.velloretourism.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,44 +43,6 @@ import com.example.velloretourism.data.Place
 import com.example.velloretourism.data.local.LocalPlacesDataProvider
 import com.example.velloretourism.ui.Utils.ContentType
 
-//@Composable
-//fun PlaceScreen(
-//    windowWidthSizeClass: WindowWidthSizeClass,
-//    modifier: Modifier,
-//) {
-//
-//    val contentType = when(windowWidthSizeClass) {
-//        WindowWidthSizeClass.Compact -> {
-//            ContentType.LIST_ONLY
-//        }
-//        WindowWidthSizeClass.Medium -> {
-//            ContentType.LIST_ONLY
-//        }
-//        WindowWidthSizeClass.Expanded -> {
-//            ContentType.LIST_AND_DETAIL
-//        }
-//        else -> {
-//            ContentType.LIST_ONLY
-//        }
-//    }
-//
-//    val placesList = LocalPlacesDataProvider.allPlaces
-//
-//    if(contentType == ContentType.LIST_AND_DETAIL) {
-//        PlaceListAndDetail(
-//            placesList = placesList,
-//            onItemClick = {}
-//        )
-//    }
-//    else {
-//        PlacesList(
-//            placesList = placesList,
-//            modifier = modifier,
-//            onItemClick = {}
-//        )
-//    }
-//}
-
 @Composable
 fun PlacesList(
     placesList: List<Place>,
@@ -88,8 +52,8 @@ fun PlacesList(
 ) {
     LazyColumn(
         modifier = modifier
-            .padding(horizontal = 12.dp, vertical = 16.dp)
-            .fillMaxSize(),
+            .padding(horizontal = 12.dp, vertical = 16.dp),
+          //  .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(placesList) {place ->
@@ -114,7 +78,7 @@ fun PlacesListItem(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if(selected)
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.inversePrimary
             else
             MaterialTheme.colorScheme.secondaryContainer
         ),
@@ -156,11 +120,15 @@ fun PlacesListItem(
 @Composable
 fun PlaceDetail(
     place: Place?,
+    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler {
+        onBackPressed()
+    }
     if(place == null) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+           modifier = modifier,
             contentAlignment = Alignment.Center
             ) {
             Text("No place selected yet")
@@ -218,19 +186,29 @@ fun PlaceListAndDetail(
     onItemClick: (Place) -> Unit,
     modifier: Modifier = Modifier,
     currentSelectedPlace: Place?,
+    onBackPressed: () -> Unit,
 ) {
+    BackHandler {
+        onBackPressed()
+    }
+
     Row(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
         PlacesList(
             placesList = placesList,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
             onItemClick = onItemClick,
             currentSelectedPlace = currentSelectedPlace
         )
         PlaceDetail(
             place = currentSelectedPlace,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            onBackPressed = onBackPressed
         )
     }
 }
@@ -259,7 +237,8 @@ fun PlacesListPreview() {
 @Composable
 fun PlaceDetailPreview() {
     PlaceDetail(
-        place = LocalPlacesDataProvider.allPlaces[0]
+        place = LocalPlacesDataProvider.allPlaces[0],
+        onBackPressed = {}
     )
 }
 
@@ -269,6 +248,7 @@ fun PlacesListAndDetailPreview() {
     PlaceListAndDetail(
         placesList = LocalPlacesDataProvider.allPlaces,
         onItemClick = {},
-        currentSelectedPlace = null
+        currentSelectedPlace = null,
+        onBackPressed = {}
     )
 }

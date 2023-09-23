@@ -40,4 +40,12 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
+    fun removeSelectedPlace() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentSelectedPlace = null
+            )
+        }
+    }
 }
